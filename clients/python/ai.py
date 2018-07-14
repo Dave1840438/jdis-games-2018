@@ -21,6 +21,14 @@ def closestRessource(position, resources):
 
     return result
 
+def findVictims(cell, enemies):
+
+    allEnemyCells = []
+    for e in enemies:
+        allEnemyCells = allEnemyCells+e.cells
+
+    return [ec.position for ec in allEnemyCells if (ec.mass*1.1) <= cell.mass ]
+
 
 class AI:
     def __init__(self):
@@ -42,7 +50,10 @@ class AI:
             else:
                 distance = cell.position.distance_to(cell.target)
 
-                target = closestRessource(cell.position, game.resources)
+
+                possibleVictims = findVictims(cell, game.enemies)
+                
+                target = closestRessource(cell.position, game.resources.allResources + possibleVictims)
 
                 #if distance < 10:
                     #target = Vec2(random.randint(0, game.map.width), random.randint(0, game.map.height))
