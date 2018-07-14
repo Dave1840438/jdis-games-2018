@@ -26,10 +26,17 @@ def checkVirusCollision(game, cell, target):
 
     return False
 
-def checkEnemyCollision(game, cell):
+def getDangerousEnemies(game, cell, target):
     allEnemyCells = []
-    for e in enemies:
+    for e in game.enemies:
         allEnemyCells = allEnemyCells+e.cells
+
+    return [ec.position for ec in allEnemyCells if ec.radius >= (cell.radius*1.1) ]
+
+
+
+    
+
     
 
 
