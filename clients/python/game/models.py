@@ -1,5 +1,6 @@
 from planar import Vec2
 from typing import List
+from math import sqrt
 
 
 class UnknownPlayerIdException(Exception):
@@ -158,6 +159,7 @@ class Virus:
     def __init__(self, mass: int, position: Vec2):
         self.mass = mass
         self.position = position
+        self.radius = 4.0 + sqrt(mass) * 3.0
 
     def parse(obj):
         return Virus(
@@ -230,6 +232,8 @@ class CellActions:
 
 
 def parse_vec2(obj):
+    if obj["x"] is None or obj["y"] is None:
+        return Vec2(0, 0)
     return Vec2(obj["x"], obj["y"])
 
 
