@@ -81,7 +81,7 @@ def getSplitValue(game):
     for e in game.enemies:
         allEnemyCells = allEnemyCells+e.cells
     allEnemyCells.sort(key=lambda x: x.radius)
-    return allEnemyCells[math.ceil(len(allEnemyCells)*0.75)]*2 # x2 because the cells after the split should be at the 75ht percentile
+    return allEnemyCells[math.ceil(len(allEnemyCells)*0.95)].mass*2 # x2 because the cells after the split should be at the 75ht percentile
 
 class AI:
     def __init__(self):
@@ -97,12 +97,15 @@ class AI:
 
         print("Tick #{}".format(game.time_left))
 
+        splitValue = getSplitValue(game)
+        print (getSplitValue(game))
+
         for cell in game.me.cells:
 
             if game.time_left < 6:
                 cell.trade(99999)
 
-            if cell.mass >= getSplitValue(game):
+            if cell.mass >= splitValue:
                 if len(game.me.cells) < 10:
                     cell.split()
                 #else:
