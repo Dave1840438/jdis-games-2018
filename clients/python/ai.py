@@ -64,8 +64,8 @@ class AI:
         print("Tick #{}".format(game.tick))
 
         for cell in game.me.cells:
-            if cell.mass >= 110:
-                cell.trade(abs(cell.mass-50))
+            if cell.mass >= 500:
+                cell.trade(abs(cell.mass-250))
             else:
                 distance = cell.position.distance_to(cell.target)
 
