@@ -10,7 +10,6 @@ from game.models import *
 
 def checkVirusCollision(game, cell, target):
 
-    angle = abs(cell.position.angle_to(target))
 
     size = cell.radius
 
@@ -18,6 +17,8 @@ def checkVirusCollision(game, cell, target):
 
         if v.radius * 1.1 >= cell.radius:
             continue
+
+        angle = abs((target - cell.position).angle_to(v.position - cell.position))
 
         distance = math.sin(angle) * cell.position.distance_to(v.position)
         if size > v.radius * 2:
