@@ -76,6 +76,13 @@ def findVictims(cell, enemies):
 
     return [ec.position for ec in allEnemyCells if (ec.radius*1.1) <= cell.radius ]
 
+def getSplitValue(game):
+    allEnemyCells = []
+    for e in game.enemies:
+        allEnemyCells = allEnemyCells+e.cells
+    allEnemyCells.sort(key=lambda x: x.radius)
+    return allEnemyCells[math.ceil(len(allEnemyCells)*0.75)]*2 # x2 because the cells after the split should be at the 75ht percentile
+
 class AI:
     def __init__(self):
         pass
@@ -95,7 +102,7 @@ class AI:
             if game.time_left < 6:
                 cell.trade(99999)
 
-            if cell.mass >= 300:
+            if cell.mass >= getSplitValue(game):
                 if len(game.me.cells) < 10:
                     cell.split()
                 #else:
