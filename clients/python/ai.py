@@ -37,14 +37,16 @@ class AI:
         print("Tick #{}".format(game.tick))
 
         for cell in game.me.cells:
-
-            distance = cell.position.distance_to(cell.target)
-
-            target = closestRessource(cell.position, game.resources)
-
-            #if distance < 10:
-                #target = Vec2(random.randint(0, game.map.width), random.randint(0, game.map.height))
-            if (target != None):
-                cell.move(target)
+            if cell.mass >= 110:
+                cell.trade(abs(cell.mass-50))
             else:
-                print ('   KES TU FAIS, VA PAS LÀ ')
+                distance = cell.position.distance_to(cell.target)
+
+                target = closestRessource(cell.position, game.resources)
+
+                #if distance < 10:
+                    #target = Vec2(random.randint(0, game.map.width), random.randint(0, game.map.height))
+                if (target != None):
+                    cell.move(target)
+                else:
+                    print ('   KES TU FAIS, VA PAS LÀ ')
