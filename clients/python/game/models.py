@@ -11,10 +11,11 @@ class UnknownPlayerIdException(Exception):
 class Game:
     RANKED_GAME_ID = -1
 
-    def __init__(self, id_: int, tick: int, player_id: int, players: List['Player'],
+    def __init__(self, id_: int, tick: int, time_left: float, player_id: int, players: List['Player'],
                  resources: 'Resources', map_: 'Map', viruses: List['Virus']):
         self.id = id_
         self.tick = tick
+        self.time_left = time_left
         self.players = players
         self.resources = resources
         self.map = map_
@@ -32,6 +33,7 @@ class Game:
         return Game(
                 obj["id"],
                 obj["tick"],
+                obj["timeLeft"],
                 player_id,
                 [Player.parse(player) for player in obj["players"]],
                 Resources.parse(obj["resources"]),

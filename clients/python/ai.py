@@ -10,7 +10,6 @@ from game.models import *
 
 def checkVirusCollision(game, cell, target):
 
-
     size = cell.radius
 
     for v in game.viruses:
@@ -21,7 +20,7 @@ def checkVirusCollision(game, cell, target):
         angle = abs((target - cell.position).angle_to(v.position - cell.position))
 
         distance = math.sin(angle) * cell.position.distance_to(v.position)
-        if size > v.radius * 2:
+        if size > v.radius * 2 or v.position.distance_to(target) < 100:
             return True
 
     return False
@@ -35,9 +34,24 @@ def getDangerousEnemies(game, cell, target):
 
 
 
-    
 
-    
+
+
+
+
+
+def enemyComingthrough(cell, enemyCell):
+
+    pos = cell.position
+    ePos = enemyCell.position
+
+    eDirection = enemyCell.target - ePos
+    eToMe = pos - ePos
+
+    if pos.distance_to(ePos) < 250:
+        if abs(eDirection.angle_to(eToMe)):
+            pass
+
 
 
 
@@ -62,7 +76,6 @@ def findVictims(cell, enemies):
 
     return [ec.position for ec in allEnemyCells if (ec.radius*1.1) <= cell.radius ]
 
-
 class AI:
     def __init__(self):
         pass
@@ -75,18 +88,28 @@ class AI:
         :param game: Game object
         """
 
-        print("Tick #{}".format(game.tick))
+        print("Tick #{}".format(game.time_left))
 
         for cell in game.me.cells:
-            if cell.mass >= 500:
-                cell.trade(abs(cell.mass-250))
+
+            if game.time_left < 6:
+                cell.trade(99999)
+
+            if cell.mass >= 300:
+                if len(game.me.cells) < 10:
+                    cell.split()
+                #else:
+                    #cell.trade(cell.mass - 100)
             else:
                 distance = cell.position.distance_to(cell.target)
-
-
                 possibleVictims = findVictims(cell, game.enemies)
 
-                target = closestRessource(game, cell, game.resources.allResources + possibleVictims)
+                if (cell.mass <= 100):
+                    target = closestRessource(game, cell, game.resources.allResources + possibleVictims)
+                else:
+                    if not cell.burst:
+                        cell.burst()
+                    target = closestRessource(game, cell, possibleVictims)
 
                 #if distance < 10:
                     #target = Vec2(random.randint(0, game.map.width), random.randint(0, game.map.height))
