@@ -7,6 +7,21 @@ from planar import Vec2
 from game.models import *
 
 
+
+def closestRessource(position, resources):
+
+    result = None
+    min = 99999999999;
+
+    for r in resources.allResources:
+        distance = position.distance_to(r)
+        if distance < min:
+            min = distance
+            result = r
+
+    return result
+
+
 class AI:
     def __init__(self):
         pass
@@ -22,9 +37,14 @@ class AI:
         print("Tick #{}".format(game.tick))
 
         for cell in game.me.cells:
+
             distance = cell.position.distance_to(cell.target)
 
-            if distance < 10:
-                target = Vec2(random.randint(0, game.map.width), random.randint(0, game.map.height))
+            target = closestRessource(cell.position, game.resources)
 
+            #if distance < 10:
+                #target = Vec2(random.randint(0, game.map.width), random.randint(0, game.map.height))
+            if (target != None):
                 cell.move(target)
+            else:
+                print ('   KES TU FAIS, VA PAS LÀ ')

@@ -12,7 +12,7 @@
 ### Windows
 1. Download and extract the planar library at
 `https://bitbucket.org/caseman/planar/get/9f8615991edd.zip`
-2. Go into the extracted folder and run `python setup.py build_py install --skip-build`
+2. Go into the extracted folder and run `python3.6 setup.py build_py install --skip-build`
 3. `pip install "requests>=2.4.2"`
 4. In the Aigar.io project folder, rename `player.default.json` to `player.json` and
    replace `player_id`, `player_secret` and `api_url` by the values that were given to
@@ -132,7 +132,7 @@ There is a maximum of 10 cells per player at any given time during a game.
              effect.
 
 - `trade(mass)`: Trades a given amount of the cell's mass to gain points
-                 in the player's score (competition points) with a ratio of 
+                 in the player's score (competition points) with a ratio of
                  2:1 (trading 20 mass will give 10 points).
                  This call freezes the cell for 5 seconds. After that, if the
                  cell is still alive, the trade will complete.
