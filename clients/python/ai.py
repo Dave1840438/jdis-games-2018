@@ -26,6 +26,13 @@ def checkVirusCollision(game, cell, target):
 
     return False
 
+def checkEnemyCollision(game, cell):
+    allEnemyCells = []
+    for e in enemies:
+        allEnemyCells = allEnemyCells+e.cells
+    
+
+
 
 def closestRessource(game, cell, targets):
 
@@ -46,7 +53,7 @@ def findVictims(cell, enemies):
     for e in enemies:
         allEnemyCells = allEnemyCells+e.cells
 
-    return [ec.position for ec in allEnemyCells if (ec.mass*1.1) <= cell.mass ]
+    return [ec.position for ec in allEnemyCells if (ec.radius*1.1) <= cell.radius ]
 
 
 class AI:
