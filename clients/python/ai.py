@@ -3,7 +3,7 @@ This is the file that should be used to code your AI.
 """
 import random
 import math
-from planar import Vec2
+from planar import Vec2, Ray
 
 from game.models import *
 
@@ -12,15 +12,21 @@ def checkVirusCollision(game, cell, target):
 
     size = cell.radius
 
+    dir = target - cell.position
+
+    if dir.is_null:
+        return False
+
+    r = Ray(cell.position, dir)
+
     for v in game.viruses:
 
         if v.radius * 1.1 >= cell.radius:
             continue
 
-        angle = abs((target - cell.position).angle_to(v.position - cell.position))
+        d = r.distance_to(v.position)
 
-        distance = math.sin(angle) * cell.position.distance_to(v.position)
-        if size > v.radius * 2 or v.position.distance_to(target) < 100:
+        if v.radius + cell.radius < distance:
             return True
 
     return False
@@ -33,38 +39,58 @@ def getDangerousEnemies(game, cell, target):
     return [ec.position for ec in allEnemyCells if ec.radius >= (cell.radius*1.1) ]
 
 
-
-
-
-
-
-
-
 def enemyComingthrough(cell, enemyCell):
 
-    pos = cell.position
-    ePos = enemyCell.position
+    if cell.position.distance_to(enemyCell.position) > 250:
+        return False
 
-    eDirection = enemyCell.target - ePos
-    eToMe = pos - ePos
+    dir = enemyCell.target - enemyCell.position
 
-    if pos.distance_to(ePos) < 250:
-        if abs(eDirection.angle_to(eToMe)):
-            pass
+    if dir.is_null:
+        return False
+
+    r = Ray(enemyCell.position, dir)
+
+    d = r.distance_to(cell.position)
+
+    if enemyCell.radius > d + cell.radius:
+        return True
+
+    return False
 
 
-
-
-def closestRessource(game, cell, targets):
+def closestRessource(game, cell, targets, nbOfEnemies):
 
     result = None
     min = 99999999999;
+    index = 9999999;
 
-    for r in targets:
-        distance = cell.position.distance_to(r)
-        if distance < min and not checkVirusCollision(game, cell, r):
+    for i in range(len(targets)):
+        distance = cell.position.distance_to(targets[i])
+
+        if i == nbOfEnemies and index < 10000 and cell.position.distance_to(result) < 100:
+            if cell.mass >= 200:
+                cell.burst()
+            break
+
+        if distance < min: # and not checkVirusCollision(game, cell, targets[i]):
+
+            if i < nbOfEnemies and result != None and cell.position.distance_to(result) < 250:
+                dir = result - cell.position
+                if not dir.is_null:
+                    r = Ray(cell.position, dir)
+                    d = r.distance_to(targets[i])
+                    if d + cell.radius < 75:
+                        pass
+
+
             min = distance
-            result = r
+            result = targets[i]
+            index = i
+
+
+
+
 
     return result
 
@@ -81,7 +107,12 @@ def getSplitValue(game):
     for e in game.enemies:
         allEnemyCells = allEnemyCells+e.cells
     allEnemyCells.sort(key=lambda x: x.radius)
-    return allEnemyCells[math.ceil(len(allEnemyCells)*0.95)].mass*2 # x2 because the cells after the split should be at the 75ht percentile
+
+    return 350
+
+    #return allEnemyCells[len(allEnemyCells) -1 ].mass * 2
+
+    #return allEnemyCells[math.floor(len(allEnemyCells)*0.8)].mass*2 # x2 because the cells after the split should be at the 75ht percentile
 
 class AI:
     def __init__(self):
@@ -105,6 +136,9 @@ class AI:
             if game.time_left < 6:
                 cell.trade(99999)
 
+
+
+
             if cell.mass >= splitValue:
                 if len(game.me.cells) < 10:
                     cell.split()
@@ -115,14 +149,19 @@ class AI:
                 possibleVictims = findVictims(cell, game.enemies)
 
                 if (cell.mass <= 100):
-                    target = closestRessource(game, cell, game.resources.allResources + possibleVictims)
+                    target = closestRessource(game, cell, possibleVictims + game.resources.allResources, len(possibleVictims))
                 else:
-                    if not cell.burst:
-                        cell.burst()
-                    target = closestRessource(game, cell, possibleVictims)
+                    #cell.burst()
+                    target = closestRessource(game, cell, possibleVictims, len(possibleVictims))
 
-                #if distance < 10:
-                    #target = Vec2(random.randint(0, game.map.width), random.randint(0, game.map.height))
+
+                for e in game.enemies:
+                    for c in e.cells:
+                        if enemyComingthrough(cell, c):
+                            target = cell.position + (c.target - c.position)
+                            #cell.burst()
+                            pass
+
                 if (target != None):
                     cell.move(target)
                 else:
